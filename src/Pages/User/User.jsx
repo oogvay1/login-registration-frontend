@@ -5,6 +5,7 @@ function User() {
     const [user, setUser] = useState(null);
     const [file, setFile] = useState(null);
     const [url, setUrl] = useState("");
+    const token = localStorage.getItem("token");
 
     const handleUpload = async () => {
         const formData = new FormData();
@@ -12,17 +13,22 @@ function User() {
 
         const res = await fetch('http://localhost:3000/upload', {
             method: "POST",
-            body: formData
+            headers: {
+                authorization: `Bearer ${token}`
+            },
+            body: {
+                formData,
+                
+            }
         });
 
         const data = await res.json();
-console.log(data);
+        console.log(data);
         setUrl(data.url);
     }
 
     useEffect(() => {
         async function getUser() {
-            const token = localStorage.getItem("token");
 
             if (!token) return null;
 
