@@ -7,6 +7,7 @@ function User() {
     const [url, setUrl] = useState("");
     const token = localStorage.getItem("token");
 
+
     const handleUpload = async () => {
         const formData = new FormData();
         formData.append("file", file);
@@ -18,7 +19,7 @@ function User() {
             },
             body: {
                 formData,
-                
+
             }
         });
 
@@ -29,28 +30,31 @@ function User() {
 
     useEffect(() => {
         async function getUser() {
-
+            
             if (!token) return null;
-
+            
             try {
                 const res = await fetch(`http://localhost:3000/users`, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
                 });
-
+                
                 const data = await res.json();
-
+                
                 setUser(data);
             } catch (err) {
                 console.error(err.response?.data || err.message);
             }
         }
-
+        
         getUser();
     }, []);
-
-    console.log(document.querySelector('input'));
+    
+    const initialPost = user && {
+        userId: user._id,
+        description: "",
+    }
 
     return (
         <div>
@@ -68,6 +72,8 @@ function User() {
 
             <input type="file" onChange={(e) => setFile(e.target.files[0])} />
             <button onClick={handleUpload}>Upload</button>
+
+            <input type="text" />
 
             {url && (
                 <div>
