@@ -3,24 +3,46 @@ import { useEffect, useState } from "react";
 function User() {
 
     const [user, setUser] = useState(null);
+    const [posts, setPosts] = useState(null);
     const [file, setFile] = useState(null);
     const [url, setUrl] = useState("");
     const token = localStorage.getItem("token");
 
+    useEffect(() => {
+        async function getUser() {
+
+            if (!token) return null;
+
+            try {
+                const res = await fetch(`http://localhost:3000/users`, {
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data = await res.json();
+
+                setUser(data);
+            } catch (err) {
+                console.error(err.response?.data || err.message);
+            }
+        }
+
+        getUser();
+    }, []);
 
     const handleUpload = async () => {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("userId", user && user._id);
+        formData.append("description", "My first post");
 
         const res = await fetch('http://localhost:3000/upload', {
             method: "POST",
             headers: {
                 authorization: `Bearer ${token}`
             },
-            body: {
-                formData,
-
-            }
+            body: formData
         });
 
         const data = await res.json();
@@ -28,33 +50,20 @@ function User() {
         setUrl(data.url);
     }
 
-    useEffect(() => {
-        async function getUser() {
-            
-            if (!token) return null;
-            
-            try {
-                const res = await fetch(`http://localhost:3000/users`, {
-                    headers: {
-                        authorization: `Bearer ${token}`
-                    }
-                });
-                
-                const data = await res.json();
-                
-                setUser(data);
-            } catch (err) {
-                console.error(err.response?.data || err.message);
-            }
-        }
-        
-        getUser();
-    }, []);
-    
-    const initialPost = user && {
-        userId: user._id,
-        description: "",
-    }
+    // useEffect(() => {
+
+    //     async function getPosts() {
+
+    //         try {
+
+    //             const res = await fetch('http://localhost:3000/')
+    //         } catch (err) {
+
+    //         }
+    //     }
+
+    //     getPosts();
+    // }, []);
 
     return (
         <div>
