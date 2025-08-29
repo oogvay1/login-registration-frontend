@@ -24,7 +24,6 @@ export function useLogin() {
 
     const login = async (data) => {
 
-
         try {
 
             const res = await fetch('http://localhost:3000/users/login', {
