@@ -3,7 +3,7 @@ import { useLogin } from "../../Hooks/useLogin";
 
 function Login() {
 
-    const {login, signup} = useLogin();
+    const { login, signup } = useLogin();
 
     const initialFormS = {
         fullName: "",
@@ -104,7 +104,7 @@ function Login() {
                                 onClick={() => {
                                     setIsLogin(prev => {
                                         const newState = !prev;
-                                        setForm(newState ? initialFormL : initialFormS); // 👈 use newState
+                                        setForm(newState ? initialFormL : initialFormS);
                                         return newState;
                                     });
                                 }}

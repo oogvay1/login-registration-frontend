@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLogin } from "../../Hooks/useLogin";
 
 function User() {
 
@@ -8,13 +9,15 @@ function User() {
     const [url, setUrl] = useState("");
     const token = localStorage.getItem("token");
 
+    const { logout } = useLogin();
+
     useEffect(() => {
         async function getUser() {
 
             if (!token) return null;
 
             try {
-                const res = await fetch(`http://localhost:3000/users`, {
+                const res = await fetch(`http://localhost:3000/users/`, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
@@ -50,20 +53,30 @@ function User() {
         setUrl(data.url);
     }
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     async function getPosts() {
+        async function getPosts() {
 
-    //         try {
+            try {
 
-    //             const res = await fetch('http://localhost:3000/')
-    //         } catch (err) {
+                const res = await fetch('http://localhost:3000/upload/posts', {
+                    method: "POST",
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
+                    body: user && user._id,
+                });
 
-    //         }
-    //     }
+                const data = await res.json();
 
-    //     getPosts();
-    // }, []);
+                setPosts(data);
+            } catch (err) {
+
+            }
+        }
+
+        getPosts();
+    }, [url]);
 
     return (
         <div>
@@ -79,22 +92,25 @@ function User() {
                 <p>Loading user...</p>
             )}
 
+            <button onClick={logout}>Logout</button>
+
             <input type="file" onChange={(e) => setFile(e.target.files[0])} />
             <button onClick={handleUpload}>Upload</button>
 
             <input type="text" />
 
-            {url && (
-                <div>
-                    {file?.type.startsWith("image/") ? (
-                        <img src={url} alt="uploaded" width="200" />
+            {posts && posts.map((el, index) => (
+                <div key={index}>
+                    {el.type == 'image' ? (
+                        <img src={el.mediaUrl} alt="uploaded" />
                     ) : (
-                        <video controls width="300">
-                            <source src={url} type={file.type} />
+                        <video muted autoPlay loop>
+                            <source src={el.mediaUrl} type='video/mp4' />
                         </video>
                     )}
+                    <p>{el.description}</p>
                 </div>
-            )}
+            ))}
         </div>
     );
 

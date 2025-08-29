@@ -35,8 +35,8 @@ export function useLogin() {
                 body: JSON.stringify(data)
             });
 
-            navigate('/');
             const json = await res.json();
+            navigate('/');
 
             localStorage.setItem('token', json.token);
             console.log(json);
@@ -46,5 +46,19 @@ export function useLogin() {
         }
     }
 
-    return { login, signup };
+    const logout = async () => {
+
+        try {
+
+            const res = await fetch('http://localhost:3000/users/logout');
+            const data = await res.json();
+
+            localStorage.removeItem('token');
+            navigate('/auth')
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    return { login, signup, logout };
 }
